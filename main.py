@@ -14,11 +14,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# Importar el módulo de base de datos para Fuel Forecast
-try:
-    import database
-except ImportError:
-    database = None
+# Desactivamos temporalmente el módulo de base de datos para saltar el bloqueo de Cloudflare
+database = None
 
 # --- Servidor Flask Único para UptimeRobot / Keep Alive ---
 app = Flask('')
@@ -625,7 +622,7 @@ async def comparar(ctx, h_name: str, *r_names):
 @bot.command()
 async def fuel(ctx, message: str = ""):
     if database is None:
-        await ctx.send("⚠️ Módulo de base de datos no disponible.")
+        await ctx.send("⚠️ Módulo de base de datos desactivado temporalmente para mantenimiento.")
         return
 
     if message.upper() == "DAILY":
@@ -648,7 +645,7 @@ async def on_message(message):
     
     if message.content.startswith('$Fuel&CO2!'):
         if database is None:
-            await message.channel.send("⚠️ Módulo de base de datos no disponible.")
+            await message.channel.send("⚠️ Módulo de base de datos desactivado temporalmente para mantenimiento.")
             return
         try:
             content = message.content.split(" ")
