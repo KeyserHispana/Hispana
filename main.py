@@ -14,8 +14,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# Desactivamos temporalmente el módulo de base de datos para saltar el bloqueo de Cloudflare
-database = None
+# Importar el módulo de base de datos para Fuel Forecast con cabeceras anti-bloqueo
+try:
+    import database
+except ImportError:
+    database = None
 
 # --- Servidor Flask Único para UptimeRobot / Keep Alive ---
 app = Flask('')
@@ -622,21 +625,24 @@ async def comparar(ctx, h_name: str, *r_names):
 @bot.command()
 async def fuel(ctx, message: str = ""):
     if database is None:
-        await ctx.send("⚠️ Módulo de base de datos desactivado temporalmente para mantenimiento.")
+        await ctx.send("⚠️ Módulo de base de datos no disponible.")
         return
 
-    if message.upper() == "DAILY":
-        data, date = database.getDailyPrice()
-        embed = create_embed(data, 1, date)
-        sent_message = await ctx.send(embed=embed)
-        pins = await bot.get_channel(ctx.channel.id).pins()
-        for pin_msg in pins:
-            await pin_msg.unpin()
-        await sent_message.pin()
-    else:
-        data = database.getPrice()
-        embed = create_embed(data)
-        await ctx.send(embed=embed)
+    try:
+        if message.upper() == "DAILY":
+            data, date = database.getDailyPrice()
+            embed = create_embed(data, 1, date)
+            sent_message = await ctx.send(embed=embed)
+            pins = await bot.get_channel(ctx.channel.id).pins()
+            for pin_msg in pins:
+                await pin_msg.unpin()
+            await sent_message.pin()
+        else:
+            data = database.getPrice()
+            embed = create_embed(data)
+            await ctx.send(embed=embed)
+    except Exception as e:
+        await ctx.send(f"⚠️ Error obteniendo datos de combustible debido a restricciones de red.")
 
 @bot.event
 async def on_message(message):
@@ -645,7 +651,7 @@ async def on_message(message):
     
     if message.content.startswith('$Fuel&CO2!'):
         if database is None:
-            await message.channel.send("⚠️ Módulo de base de datos desactivado temporalmente para mantenimiento.")
+            await message.channel.send("⚠️ Módulo de base de datos no disponible.")
             return
         try:
             content = message.content.split(" ")
