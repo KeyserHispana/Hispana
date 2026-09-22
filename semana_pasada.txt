@@ -1,0 +1,53 @@
+ALIANZA, 2026-09-09, 109, 869.9909, 2.11
+Fly Aces, 105, 118849, 113.715
+Keyser, 76, 110992, 146.205
+Ariza Airlines SKY, 50, 55503, 112.005
+Snookski Air, 52, 84124, 161.310
+ERCOM AIRWAYS, 44, 57760, 130.530
+Nike-Air, 54, 71476, 131.385
+Пикб, 43, 61953, 143.925
+--EDA-ALP--, 63, 83283, 132.810
+LucianAir, 44, 48320, 109.155
+Airline sur, 56, 75952, 134.805
+Voyage Air Inc, 40, 45003, 114.855
+Palmera Flight, 37, 54211, 144.135
+Denati Airlines, 47, 56512, 115.545
+IntlTravel Quis, 38, 48210, 124.500
+Lineas Aereas Austral, 29, 39812, 130.900
+Bodoque Airlines, 33, 44120, 127.800
+THE DAI KIRI company, 42, 45210, 103.100
+Travel_World_Uy, 42, 46120, 107.500
+KD1, 48, 40120, 83.500
+KLM Royal_Dutch_Airlines, 25, 36120, 140.500
+PowerSky Airways, 31, 39810, 128.200
+EDRO AIR, 37, 39120, 106.500
+Uruguay International, 34, 38120, 112.200
+Caimitos Air Ways, 33, 35120, 105.500
+LUXAir Transport, 33, 44120, 132.800
+Goldenline Air, 19, 22120, 114.900
+LM DUTCH GLOBAL AIRWAY, 40, 33120, 84.700
+14 Air, 24, 34120, 142.000
+2M2S, 35, 40120, 116.900
+清古國際航空公司, 40, 33500, 84.700
+Volemos, 51, 31500, 62.500
+Blueways Airline - BA, 30, 31800, 106.100
+Lumino airline, 26, 32800, 121.700
+AirX., 34, 29500, 85.500
+UTAG National Airlines, 29, 30100, 101.800
+Sevilla Araya Airlines, 28, 32500, 114.100
+Cai-airline, 24, 28100, 120.600
+DHRZ AIR, 22, 27800, 128.300
+BaiYun Airline, 23, 31200, 136.900
+Cloud India, 26, 18800, 72.100
+Aviancol, 20, 20500, 99.800
+SAM8 Air, 26, 26500, 104.100
+3ya Airlines, 25, 32500, 131.700
+CECASA AIRWAYS, 0, 0, 61.600
+Fly Pity Air, 28, 23500, 82.700
+Atlantic Air Portugal, 18, 16500, 90.100
+BailyAir, 24, 18200, 75.600
+Air Edna, 29, 11400, 39.100
+Kaldis Airways, 25, 22400, 86.400
+RAFER AIR, 8, 10900, 128.900
+Pan Delta, 6, 8100, 131.100
+Valert, 12, 2900, 24.500
