@@ -193,7 +193,7 @@ def create_embed(data, daily: int = 0, date: int = 1):
         discord_time = get_discord_time(time)
         fuel_icon = "🟢" if isinstance(fuel_price, int) and fuel_price < 700 else "⛽"
         co2_icon = "🟢" if isinstance(co2_price, int) and co2_price < 140 else "♻️"
-        line = f"🕒 {discord_time}  |  {fuel_icon} {fuel_price}  |  {co2_icon} {co2_price}"
+        line = f"🕒 {discord_time}  •  {fuel_icon} {fuel_price}  •  {co2_icon} {co2_price}"
         forecast_lines.append(line)
 
     embed.description = "\n".join(forecast_lines)
@@ -277,7 +277,7 @@ async def reporte_semanal(ctx):
         prom_fmt = f"{datos['promedio']:,.0f}"
         pot_fmt = f"{datos['potencial']:,.1f}"
         
-        linea = f"**{pos_actual}.** {movimiento_str} | **{nombre}** (⚡**{datos['eficiencia']}%**) | Prom:**{prom_fmt}** | Pot:**{pot_fmt}**"
+        linea = f"**{pos_actual}.** {movimiento_str} • **{nombre}** (⚡**{datos['eficiencia']}%**) • Prom:**{prom_fmt}** • Pot:**{pot_fmt}**"
         lineas_reporte.append(linea)
 
     veteranas_actuales = {
@@ -323,8 +323,8 @@ async def reporte_semanal(ctx):
         
         if idx_chunk == 0:
             leyenda = (
-                "📖 **Leyenda:** ⬆️/⬇️/➖ Movimiento | ⚡ % Eficiencia\n"
-                "📊 **Prom:** Promedio C/D | **Pot:** Potencial C/D\n"
+                "📖 **Leyenda:** ⬆️/⬇️/➖ Movimiento • ⚡ % Eficiencia\n"
+                "📊 **Prom:** Promedio C/D • **Pot:** Potencial C/D\n"
                 "__________________________________________\n"
             )
             texto_bloque = leyenda + "\n" + texto_bloque
@@ -364,7 +364,7 @@ async def mi_aerolinea(ctx, *, nombre_buscado: str = None):
             eficiencia_h = datos_en_fecha[nombre_encontrado]['eficiencia']
             ordenados_h = sorted(datos_en_fecha.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
             puesto_h = next((idx + 1 for idx, (nom, _) in enumerate(ordenados_h) if nom == nombre_encontrado), "N/A")
-            historial_texto += f"• **{fecha}**: Puesto **#{puesto_h}** | Eficiencia: **{eficiencia_h}%**\n"
+            historial_texto += f"• **{fecha}**: Puesto **#{puesto_h}** • Eficiencia: **{eficiencia_h}%**\n"
         else:
             historial_texto += f"• **{fecha}**: *Sin registro*\n"
 
@@ -583,7 +583,7 @@ async def comparar(ctx, h_name: str, *r_names):
         f"🏆 **Ranking Global CD ({h_key}): #{hispana_rank}**"
     )
     
-    embed.add_field(name=f"🔵 {h_key} (Base) — Puesto #{h_puesto}", value=f"**Valor:** ${h_val:,.2f} \vert{} **CD:** +${h_growth:,.2f}", inline=False)
+    embed.add_field(name=f"🔵 {h_key} (Base) — Puesto #{h_puesto}", value=f"**Valor:** ${h_val:,.2f} • **CD:** +${h_growth:,.2f}", inline=False)
     
     for r_key in rivales_encontrados:
         r_val = datos_actuales[r_key]
@@ -616,7 +616,7 @@ async def comparar(ctx, h_name: str, *r_names):
             else:
                 resultado = "🤝 Empate total en valor y en crecimiento."
              
-        embed.add_field(name=f"🔴 {r_key} — Puesto #{r_puesto}", value=f"**Valor:** ${r_val:,.2f} \vert{} **CD:** +${r_growth:,.2f} (Rank CD: #{r_rank_cd})\n{resultado}", inline=False)
+        embed.add_field(name=f"🔴 {r_key} — Puesto #{r_puesto}", value=f"**Valor:** ${r_val:,.2f} • **CD:** +${r_growth:,.2f} (Rank CD: #{r_rank_cd})\n{resultado}", inline=False)
 
     embed.set_footer(text="⭐ Developed by HISPANA Alliance ⭐")
     await ctx.send(embed=embed)
