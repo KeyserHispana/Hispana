@@ -3,6 +3,8 @@ from threading import Thread
 import os
 import json
 import io
+import requests
+import base64
 from datetime import datetime, timedelta
 from difflib import get_close_matches
 
@@ -14,18 +16,18 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# Importar el módulo de base de datos para Fuel Forecast con cabeceras anti-bloqueo
+# Importar el módulo de base de datos para Fuel Forecast
 try:
     import database
 except ImportError:
     database = None
 
-# --- Servidor Flask Único para UptimeRobot / Keep Alive ---
+# --- Servidor Flask Único para Keep Alive ---
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot Unificado HISPANA (Estadísticas, Proyecciones y Fuel) activo 24/7"
+    return "Bot Unificado HISPANA activo 24/7"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
@@ -35,9 +37,45 @@ def keep_alive():
     t.start()
 
 # ==========================================
-# 1. FUNCIONES Y LÓGICA DE ESTADÍSTICAS
+# 1. FUNCIONES Y LÓGICA DE ESTADÍSTICAS & RESPALDO GITHUB
 # ==========================================
 ARCHIVO_HISTORIAL = 'historial_eficiencia.json'
+
+def sincronizar_json_con_github(contenido_json_str):
+    token = os.environ.get('GITHUB_TOKEN')
+    repo = os.environ.get('GITHUB_REPO')
+    
+    if not token or not repo:
+        print("⚠️ GITHUB_TOKEN o GITHUB_REPO no están configurados.")
+        return
+
+    url = f"https://api.github.com/repos/{repo}/contents/{ARCHIVO_HISTORIAL}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    try:
+        res = requests.get(url, headers=headers)
+        sha = res.json().get('sha') if res.status_code == 200 else None
+
+        contenido_b64 = base64.b64encode(contenido_json_str.encode('utf-8')).decode('utf-8')
+
+        payload = {
+            "message": "Auto-sync historial_eficiencia.json desde Bot",
+            "content": contenido_b64,
+            "branch": "main"
+        }
+        if sha:
+            payload["sha"] = sha
+
+        res_put = requests.put(url, headers=headers, json=payload)
+        if res_put.status_code in [200, 201]:
+            print("✅ historial_eficiencia.json respaldado automáticamente en GitHub.")
+        else:
+            print(f"⚠️ Error respaldando en GitHub: {res_put.status_code}")
+    except Exception as e:
+        print(f"❌ Error en la conexión con GitHub: {e}")
 
 def cargar_historial():
     if not os.path.exists(ARCHIVO_HISTORIAL):
@@ -60,8 +98,12 @@ def guardar_en_historial(fecha, datos_actuales):
         fechas_a_borrar = fechas_ordenadas[:-6]
         for f in fechas_a_borrar:
             del historial[f]
+            
+    json_str = json.dumps(historial, indent=4)
     with open(ARCHIVO_HISTORIAL, 'w', encoding='utf-8') as f:
-        json.dump(historial, f, indent=4)
+        f.write(json_str)
+        
+    sincronizar_json_con_github(json_str)
 
 def cargar_datos_semana(nombre_archivo):
     datos_aerolineas = {}
@@ -493,7 +535,7 @@ async def grafica_eficiencia(ctx):
     ax2.set_yticklabels(etiquetas_y, fontsize=10, weight='bold')
     
     rango_texto = f"Del {fechas[0]} al {fechas[-1]}" if len(fechas) > 1 else fechas[0]
-    plt.title(f'Evolución del Ranking Interno - HISPana ({rango_texto})', fontsize=16, pad=20, weight='bold')
+    plt.title(f'Evolución del Ranking Interno - HISPANA ({rango_texto})', fontsize=16, pad=20, weight='bold')
     ax.set_xticks(range(len(fechas)))
     ax.set_xticklabels(fechas, rotation=15, fontsize=10)
     ax.grid(True, linestyle='--', alpha=0.5, axis='x') 
