@@ -1,53 +1,48 @@
-ALIANZA, 2026-09-17, 107, 887.9637, 2.16
-Keyser, 89, 130859, 146.775
-Fly Aces, 113, 128821, 114.285
-Airline sur, 56, 75652, 134.805
-Snookski Air, 62, 99707, 161.880
-Пикб, 52, 75514, 144.495
-ERCOM AIRWAYS, 56, 73511, 130.815
-Denati Airlines, 60, 69032, 115.710
-Voyage Air Inc, 46, 53786, 115.710
-Ariza Airlines SKY, 49, 55221, 112.860
---EDA-ALP--, 39, 53049, 134.520
-Nike-Air, 56, 73999, 131.955
-Palmera Flight, 39, 55869, 143.925
-LucianAir, 44, 48933, 110.010
-IntlTravel Quis, 39, 48744, 124.830
-Lineas Aereas Austral, 32, 42313, 131.100
-Bodoque Airlines, 37, 47170, 127.965
-THE DAI KIRI company, 47, 48552, 103.455
-Travel_World_Uy, 46, 49552, 107.730
-KD1, 51, 42528, 83.790
-KLM Royal_Dutch_Airlines, 28, 39887, 140.790
-PowerSky Airways, 34, 43276, 128.535
-EDRO AIR, 40, 42432, 106.875
-Uruguay International, 37, 41376, 112.575
-Caimitos Air Ways, 36, 38050, 105.735
-LUXAir Transport, 36, 48074, 133.095
-Goldenline Air, 21, 24281, 115.140
-LM DUTCH GLOBAL AIRWAY, 43, 36452, 84.930
-14 Air, 26, 37088, 142.215
-2M2S, 38, 43971, 117.135
-清古國際航空公司, 43, 36679, 84.930
-Volemos, 55, 34377, 62.700
-Blueways Airline - BA, 33, 34711, 106.305
-Lumino airline, 29, 35972, 121.980
-AirX., 37, 32162, 85.785
-UTAG National Airlines, 32, 32977, 102.030
-Sevilla Araya Airlines, 31, 35547, 114.285
-Cai-airline, 26, 30921, 120.840
-DHRZ AIR, 24, 30555, 128.535
-BaiYun Airline, 25, 34250, 137.085
-Cloud India, 28, 20627, 72.390
-Aviancol, 22, 22444, 100.035
-SAM8 Air, 28, 28847, 104.310
-3ya Airlines, 27, 35584, 131.955
-CECASA AIRWAYS, 0, 0, 61.845
-Fly Pity Air, 31, 25842, 82.935
-Atlantic Air Portugal, 20, 18051, 90.345
-BailyAir, 26, 19920, 75.810
-Air Edna, 32, 12476, 39.330
-Kaldis Airways, 28, 24510, 86.640
-RAFER AIR, 9, 11970, 129.105
-Pan Delta, 7, 8891, 131.385
-Valert, 13, 3228, 24.795
+ALIANZA, 2026-09-23, 106, 901.0263, 2.35
+Keyser, 41, 59593, 147.1
+••EDA•ALP••, 43, 58037, 134.5
+Fly Aces, 80, 92269, 115.1
+Snookski Air, 56, 91306, 161.9
+Пмкб, 39, 56407, 145.1
+PowerSky Airways, 34, 44341, 129.1
+Airline sur, 49, 69885, 143.1
+Nike-Air, 35, 46050, 132.2
+Travel_World_Uy, 37, 39653, 108.0
+ERCOM AIRWAYS, 41, 53362, 131.7
+Ariza Airlines SKY, 39, 43760, 112.9
+Palmera Flight, 30, 43767, 144.2
+Lineas Aereas Austral, 27, 35845, 131.1
+LUXAir Transport, 27, 38960, 134.5
+14 Air, 22, 31170, 142.5
+THE dai KIRI company, 32, 32789, 103.5
+Uruguay International, 30, 34084, 112.9
+Voyage Air Inc, 31, 35596, 116.0
+SAM8 Air, 21, 21596, 104.3
+IntlTravel Quis, 30, 37577, 125.1
+2M2S, 27, 31755, 117.1
+Lumino airline, 26, 31258, 122.3
+LucianAir, 32, 35135, 110.9
+UTAG National Airlines, 23, 23470, 102.0
+KLM DUTCH GLOBAL AIRWAYS, 31, 26004, 84.9
+Blueways Airline - BA, 26, 27891, 107.7
+Sevilla Araya Airlines, 22, 25496, 114.9
+Goldenline Air, 24, 27888, 115.1
+EDRO AIR, 27, 28891, 106.9
+Bodoque Airlines, 23, 29579, 128.3
+AirX., 30, 25638, 86.4
+Caimitos Air Ways, 28, 29847, 106.0
+DHRZ AIR, 21, 26905, 127.4
+Volemos, 41, 26188, 63.6
+KD1, 38, 31275, 88.1
+Fly Pity Air, 27, 22733, 82.9
+Cai-airline, 15, 18235, 120.8
+3ya Airlines, 18, 24285, 132.0
+Atlantic Air Portugal, 21, 19073, 90.3
+BailyAir, 19, 14172, 75.8
+清吉國際航空公司, 32, 26594, 84.4
+Kaldis AIRWAYS, 18, 15716, 86.6
+CECASA AIRWAYS, 24, 15279, 63.6
+Cloud India, 19, 14083, 73.0
+Denati Airlines, 38, 41121, 115.7
+Aviancol, 17, 16716, 100.0
+Air Edna, 21, 8438, 39.3
