@@ -302,7 +302,6 @@ async def reporte_semanal(ctx):
     ranking_pasado = sorted(datos_pasados.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
     ranking_actual = sorted(datos_actuales.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
 
-    # Filtrar con el normalizador para conectar con el pasado correctamente
     pos_pasadas_dict = {normalizar(nombre): idx + 1 for idx, (nombre, datos) in enumerate(ranking_pasado)}
 
     lineas_reporte = []
@@ -447,7 +446,7 @@ async def enfrentar(ctx, *, texto_duelo: str = None):
         partes = texto_duelo.lower().split('vs')
         
     if len(partes) != 2:
-        await ctx.send("⚠️ No se pudo interpretar el duelo.")
+        await ctx.send("⚠️ No se pudo interpretar el duelo. Usa el formato: `!enfrentar Aerolinea A vs Aerolinea B`")
         return
 
     busq_a_norm = normalizar(partes[0].strip())
@@ -580,7 +579,7 @@ async def comparar(ctx, h_name: str, *r_names):
         await ctx.send("⚠️ Por favor, ingresa un máximo de 8 alianzas rivales a comparar.")
         return
     if len(r_names) == 0:
-        await ctx.send("⚠️ Debes incluir al menos una alianza rival.")
+        await ctx.send("⚠️ Debes incluir al menos una alianza rival. Ejemplo: `!comparar Hispana FAME`")
         return
 
     fecha_pasada, datos_pasados = cargar_datos_desde_txt('pasados.txt')
@@ -700,7 +699,7 @@ async def fuel(ctx, message: str = ""):
             embed = create_embed(data)
             await ctx.send(embed=embed)
     except Exception as e:
-        await ctx.send(f"⚠️ Error obteniendo datos de combustible.")
+        await ctx.send(f"⚠️ Error obteniendo datos de combustible debido a restricciones de red.")
 
 @bot.event
 async def on_message(message):
@@ -730,7 +729,7 @@ async def on_message(message):
                 text = database.updateCO2(table_name, dbTime, co2)
                 await message.channel.send(text)
         except Exception as e:
-            await message.channel.send(f"⚠️ Error actualizando la base de datos.")
+            await message.channel.send(f"⚠️ Error actualizando la base de datos. Verifica el formato.")
             
     await bot.process_commands(message)
 
