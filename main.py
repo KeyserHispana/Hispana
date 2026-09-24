@@ -5,6 +5,7 @@ import json
 import io
 import requests
 import base64
+import re
 from datetime import datetime, timedelta
 from difflib import get_close_matches
 
@@ -40,6 +41,10 @@ def keep_alive():
 # 1. FUNCIONES Y LÓGICA DE ESTADÍSTICAS & RESPALDO GITHUB
 # ==========================================
 ARCHIVO_HISTORIAL = 'historial_eficiencia.json'
+
+def normalizar(nombre):
+    """Filtro para ignorar símbolos, espacios y mayúsculas en los nombres."""
+    return re.sub(r'[^a-zA-Z0-9]', '', str(nombre)).lower()
 
 def sincronizar_json_con_github(contenido_json_str):
     token = os.environ.get('GITHUB_TOKEN')
@@ -297,16 +302,18 @@ async def reporte_semanal(ctx):
     ranking_pasado = sorted(datos_pasados.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
     ranking_actual = sorted(datos_actuales.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
 
-    pos_pasadas_dict = {nombre: idx + 1 for idx, (nombre, datos) in enumerate(ranking_pasado)}
+    # Filtrar con el normalizador para conectar con el pasado correctamente
+    pos_pasadas_dict = {normalizar(nombre): idx + 1 for idx, (nombre, datos) in enumerate(ranking_pasado)}
 
     lineas_reporte = []
     movimientos_lista = [] 
 
     for idx, (nombre, datos) in enumerate(ranking_actual):
         pos_actual = idx + 1
+        nom_norm = normalizar(nombre)
         
-        if nombre in pos_pasadas_dict:
-            pos_pasada = pos_pasadas_dict[nombre]
+        if nom_norm in pos_pasadas_dict:
+            pos_pasada = pos_pasadas_dict[nom_norm]
             diferencia = pos_pasada - pos_actual
             movimientos_lista.append({'nombre': nombre, 'dif': diferencia})
             
@@ -324,11 +331,11 @@ async def reporte_semanal(ctx):
 
     veteranas_actuales = {
         k: v for k, v in datos_actuales.items() 
-        if k in pos_pasadas_dict and k.lower() != 'keyser' and v['eficiencia'] > 0
+        if normalizar(k) in pos_pasadas_dict and normalizar(k) != 'keyser' and v['eficiencia'] > 0
     }
 
     ranking_veteranas = sorted(veteranas_actuales.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
-    movimientos_sin_keyser = [x for x in movimientos_lista if x['nombre'].lower() != 'keyser' and x['nombre'] in pos_pasadas_dict]
+    movimientos_sin_keyser = [x for x in movimientos_lista if normalizar(x['nombre']) != 'keyser' and normalizar(x['nombre']) in pos_pasadas_dict]
 
     los_que_subieron = sorted([x for x in movimientos_sin_keyser if x['dif'] > 0], key=lambda x: x['dif'], reverse=True)
     los_que_bajaron = sorted([x for x in movimientos_sin_keyser if x['dif'] < 0], key=lambda x: x['dif']) 
@@ -385,14 +392,15 @@ async def mi_aerolinea(ctx, *, nombre_buscado: str = None):
         await ctx.send("⚠️ No hay datos actuales cargados en el sistema.")
         return
 
+    nombre_buscado_norm = normalizar(nombre_buscado)
     nombre_encontrado = None
     for nom in datos_actuales.keys():
-        if nombre_buscado.strip().lower() == nom.lower():
+        if nombre_buscado_norm == normalizar(nom):
             nombre_encontrado = nom
             break
 
     if not nombre_encontrado:
-        await ctx.send(f"❌ No se encontró ninguna aerolínea con el nombre **'{nombre_buscado}'** en el registro actual.")
+        await ctx.send(f"❌ No se encontró ninguna aerolínea parecida a **'{nombre_buscado}'** en el registro.")
         return
 
     historial = cargar_historial()
@@ -402,10 +410,13 @@ async def mi_aerolinea(ctx, *, nombre_buscado: str = None):
     historial_texto = ""
     for fecha in ultimas_fechas:
         datos_en_fecha = historial[fecha]
-        if nombre_encontrado in datos_en_fecha:
-            eficiencia_h = datos_en_fecha[nombre_encontrado]['eficiencia']
+        
+        nombre_en_historial = next((n for n in datos_en_fecha.keys() if normalizar(n) == nombre_buscado_norm), None)
+        
+        if nombre_en_historial:
+            eficiencia_h = datos_en_fecha[nombre_en_historial]['eficiencia']
             ordenados_h = sorted(datos_en_fecha.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
-            puesto_h = next((idx + 1 for idx, (nom, _) in enumerate(ordenados_h) if nom == nombre_encontrado), "N/A")
+            puesto_h = next((idx + 1 for idx, (nom, _) in enumerate(ordenados_h) if nom == nombre_en_historial), "N/A")
             historial_texto += f"• **{fecha}**: Puesto **#{puesto_h}** • Eficiencia: **{eficiencia_h}%**\n"
         else:
             historial_texto += f"• **{fecha}**: *Sin registro*\n"
@@ -436,22 +447,22 @@ async def enfrentar(ctx, *, texto_duelo: str = None):
         partes = texto_duelo.lower().split('vs')
         
     if len(partes) != 2:
-        await ctx.send("⚠️ No se pudo interpretar el duelo. Usa el formato: `!enfrentar Aerolinea A vs Aerolinea B`")
+        await ctx.send("⚠️ No se pudo interpretar el duelo.")
         return
 
-    busq_a = partes[0].strip()
-    busq_b = partes[1].strip()
+    busq_a_norm = normalizar(partes[0].strip())
+    busq_b_norm = normalizar(partes[1].strip())
 
     _, datos_actuales = cargar_datos_semana('semana_actual.txt')
     if not datos_actuales:
         await ctx.send("⚠️ No hay datos actuales cargados.")
         return
 
-    nom_a = next((nom for nom in datos_actuales.keys() if busq_a.lower() == nom.lower()), None)
-    nom_b = next((nom for nom in datos_actuales.keys() if busq_b.lower() == nom.lower()), None)
+    nom_a = next((nom for nom in datos_actuales.keys() if normalizar(nom) == busq_a_norm), None)
+    nom_b = next((nom for nom in datos_actuales.keys() if normalizar(nom) == busq_b_norm), None)
 
     if not nom_a or not nom_b:
-        await ctx.send(f"❌ No se pudo encontrar a una o ambas aerolíneas en el registro. Asegúrate de escribir bien los nombres.\n- Buscaste: **{busq_a}** y **{busq_b}**")
+        await ctx.send(f"❌ No se pudo encontrar a una o ambas aerolíneas. Asegúrate de escribirlas bien.")
         return
 
     ranking_actual = sorted(datos_actuales.items(), key=lambda x: x[1]['eficiencia'], reverse=True)
@@ -479,7 +490,7 @@ async def enfrentar(ctx, *, texto_duelo: str = None):
 async def grafica_eficiencia(ctx):
     historial = cargar_historial()
     if len(historial) < 2:
-        await ctx.send("⚠️ Aún no hay suficientes datos históricos. El bot necesita tener guardadas al menos 2 semanas para comparar.")
+        await ctx.send("⚠️ Aún no hay suficientes datos históricos (mínimo 2 semanas).")
         return
 
     fechas_todas = sorted(historial.keys())
@@ -487,23 +498,25 @@ async def grafica_eficiencia(ctx):
     fecha_actual = fechas[-1]
     fecha_anterior = fechas[-2]
     
+    nombres_originales = {normalizar(nom): nom for nom in historial[fecha_actual].keys()}
+    
     rankings_por_fecha = {}
     for fecha in fechas:
         datos_fecha = {a: d['eficiencia'] for a, d in historial[fecha].items() if d is not None}
         ordenados = sorted(datos_fecha.items(), key=lambda x: x[1], reverse=True)
-        rankings_por_fecha[fecha] = {item[0]: idx + 1 for idx, item in enumerate(ordenados)}
+        rankings_por_fecha[fecha] = {normalizar(item[0]): idx + 1 for idx, item in enumerate(ordenados)}
         
     ranking_actual_ordenado = sorted(rankings_por_fecha[fecha_actual].items(), key=lambda x: x[1])
-    aerolineas_actuales = [a for a, r in ranking_actual_ordenado]
+    aerolineas_actuales_norm = [item[0] for item in ranking_actual_ordenado]
     
-    altura_figura = max(8, len(aerolineas_actuales) * 0.4) 
+    altura_figura = max(8, len(aerolineas_actuales_norm) * 0.4) 
     fig, ax = plt.subplots(figsize=(14, altura_figura))
     
-    for aerolinea in aerolineas_actuales:
+    for aerolinea_norm in aerolineas_actuales_norm:
         valores_y = []
         fechas_plot = []
         for fecha in fechas:
-            rank = rankings_por_fecha[fecha].get(aerolinea)
+            rank = rankings_por_fecha[fecha].get(aerolinea_norm)
             if rank is not None:
                 valores_y.append(rank)
                 fechas_plot.append(fecha)
@@ -514,10 +527,13 @@ async def grafica_eficiencia(ctx):
     ticks_y = []
     etiquetas_y = []
     
-    for aerolinea, rank_actual in ranking_actual_ordenado:
+    for aerolinea_norm, rank_actual in ranking_actual_ordenado:
         ticks_y.append(rank_actual)
-        rank_anterior = rankings_por_fecha[fecha_anterior].get(aerolinea)
-        eficiencia_actual = historial[fecha_actual][aerolinea]['eficiencia'] if aerolinea in historial[fecha_actual] else 0
+        rank_anterior = rankings_por_fecha[fecha_anterior].get(aerolinea_norm)
+        nombre_real = nombres_originales.get(aerolinea_norm, aerolinea_norm)
+        
+        eficiencia_actual = next((d['eficiencia'] for k, d in historial[fecha_actual].items() if normalizar(k) == aerolinea_norm), 0)
+        
         if rank_anterior is not None:
             diferencia = rank_anterior - rank_actual
             if diferencia > 0: mov = f"(▲ {diferencia})"
@@ -525,7 +541,7 @@ async def grafica_eficiencia(ctx):
             else: mov = "(=)"
         else:
             mov = "(Nuevo)"
-        etiquetas_y.append(f"{rank_actual}. {aerolinea}  {mov}  [{eficiencia_actual}%]")
+        etiquetas_y.append(f"{rank_actual}. {nombre_real}  {mov}  [{eficiencia_actual}%]")
         
     ax.set_yticks(ticks_y)
     ax.set_yticklabels([str(t) for t in ticks_y], fontsize=10, color='gray')
@@ -564,7 +580,7 @@ async def comparar(ctx, h_name: str, *r_names):
         await ctx.send("⚠️ Por favor, ingresa un máximo de 8 alianzas rivales a comparar.")
         return
     if len(r_names) == 0:
-        await ctx.send("⚠️ Debes incluir al menos una alianza rival. Ejemplo: `!comparar Hispana FAME`")
+        await ctx.send("⚠️ Debes incluir al menos una alianza rival.")
         return
 
     fecha_pasada, datos_pasados = cargar_datos_desde_txt('pasados.txt')
@@ -684,7 +700,7 @@ async def fuel(ctx, message: str = ""):
             embed = create_embed(data)
             await ctx.send(embed=embed)
     except Exception as e:
-        await ctx.send(f"⚠️ Error obteniendo datos de combustible debido a restricciones de red.")
+        await ctx.send(f"⚠️ Error obteniendo datos de combustible.")
 
 @bot.event
 async def on_message(message):
@@ -714,7 +730,7 @@ async def on_message(message):
                 text = database.updateCO2(table_name, dbTime, co2)
                 await message.channel.send(text)
         except Exception as e:
-            await message.channel.send(f"⚠️ Error actualizando la base de datos. Verifica el formato.")
+            await message.channel.send(f"⚠️ Error actualizando la base de datos.")
             
     await bot.process_commands(message)
 
