@@ -8,7 +8,7 @@ ERCOM AIRWAYS, 56, 73511, 130.815
 Denati Airlines, 60, 69032, 115.710
 Voyage Air Inc, 46, 53786, 115.710
 Ariza Airlines SKY, 49, 55221, 112.860
---EDA-ALP--, 39, 53049, 134.520
+••EDA•ALP••, 39, 53049, 134.520
 Nike-Air, 56, 73999, 131.955
 Palmera Flight, 39, 55869, 143.925
 LucianAir, 44, 48933, 110.010
