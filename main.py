@@ -51,7 +51,7 @@ def sincronizar_json_con_github(contenido_json_str):
     repo = os.environ.get('GITHUB_REPO')
     
     if not token or not repo:
-        print("⚠️ GITHUB_TOKEN o GITHUB_REPO no están configurados.")
+        print("⚠️️ GITHUB_TOKEN o GITHUB_REPO no están configurados.")
         return
 
     url = f"https://api.github.com/repos/{repo}/contents/{ARCHIVO_HISTORIAL}"
@@ -134,15 +134,20 @@ def cargar_datos_semana(nombre_archivo):
             if len(partes) >= 4:
                 nombre = partes[0].strip()
                 try:
-                    eficiencia = int(partes[1])
-                    promedio = float(partes[2])
-                    potencial = float(partes[3])
+                    p1 = partes[1].strip()
+                    p2 = partes[2].strip()
+                    p3 = partes[3].strip()
+
+                    eficiencia = int(p1) if (p1.isdigit() or (p1.startswith('-') and p1[1:].isdigit())) else 0
+                    promedio = float(p2.replace('$', '').replace(',', '')) if p2 not in ['#N/A', 'N/A', ''] else 0.0
+                    potencial = float(p3.replace('$', '').replace(',', '')) if p3 not in ['#N/A', 'N/A', ''] else 0.0
+
                     datos_aerolineas[nombre] = {
                         'eficiencia': eficiencia,
                         'promedio': promedio,
                         'potencial': potencial
                     }
-                except ValueError:
+                except Exception:
                     continue
     return datos_alianza, datos_aerolineas
 
@@ -199,7 +204,7 @@ def calcular_dias_entre_archivos(fecha_pasada, fecha_actual):
         return 7
 
 # ==========================================
-# 3. FUNCIONES Y LÓGICA DE FUEL FORECAST (ORDENAMIENTO Y TIEMPO REAL)
+# 3. FUNCIONES Y LÓGICA DE FUEL FORECAST
 # ==========================================
 def create_embed(data, daily: int = 0, date: int = 1):
     title = f"Fuel & CO2 price forecast for Day {date}" if daily else "Fuel & CO2 price forecast for the next 12 hours"
@@ -237,7 +242,6 @@ def create_embed(data, daily: int = 0, date: int = 1):
             
             candidate = datetime(now_utc.year, now_utc.month, now_utc.day, hour, minute, tzinfo=timezone.utc)
             
-            # Si el bloque de hora en UTC ya pasó hace más de 25 minutos, pertenece al día siguiente en UTC
             if candidate < (now_utc - timedelta(minutes=25)):
                 candidate += timedelta(days=1)
                 
@@ -249,10 +253,8 @@ def create_embed(data, daily: int = 0, date: int = 1):
 
         registros_procesados.append((candidate, discord_time, fuel_price, co2_price))
 
-    # Ordenar cronológicamente a partir de la hora actual
     registros_procesados.sort(key=lambda x: x[0])
 
-    # Tomar exactamente las próximas 24 medias horas (12 horas)
     if not daily:
         registros_procesados = registros_procesados[:24]
 
@@ -341,7 +343,7 @@ async def reporte_semanal(ctx):
             diferencia = pos_pasada - pos_actual
             movimientos_lista.append({'nombre': nombre, 'dif': diferencia})
             
-            if diferencia > 0: movimiento_str = f"⬆️️{diferencia}"
+            if diferencia > 0: movimiento_str = f"⬆️{diferencia}"
             elif diferencia < 0: movimiento_str = f"⬇️{abs(diferencia)}"
             else: movimiento_str = "➖0"
         else:
