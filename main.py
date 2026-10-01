@@ -199,7 +199,7 @@ def calcular_dias_entre_archivos(fecha_pasada, fecha_actual):
         return 7
 
 # ==========================================
-# 3. FUNCIONES Y LÓGICA DE FUEL FORECAST
+# 3. FUNCIONES Y LÓGICA DE FUEL FORECAST (TIEMPOS DINÁMICOS POR CLIENTE)
 # ==========================================
 def create_embed(data, daily: int = 0, date: int = 1):
     title = f"Fuel & CO2 price forecast for Day {date}" if daily else "Fuel & CO2 price forecast for the next 12 hours"
@@ -210,9 +210,9 @@ def create_embed(data, daily: int = 0, date: int = 1):
 
     forecast_lines = []
     
-    # Usamos UTC-5 (Horario de Colombia) como base
-    colombia_tz = timezone(timedelta(hours=-5))
-    now = datetime.now(colombia_tz)
+    # Base en UTC puro para que la marca de tiempo de Discord (<t:unix_ts:t>) 
+    # se traduzca de forma 100% dinámica a la zona horaria de quien esté mirando Discord.
+    now_utc = datetime.now(timezone.utc)
     last_dt = None
 
     for entry in data:
@@ -226,7 +226,7 @@ def create_embed(data, daily: int = 0, date: int = 1):
         except ValueError:
             co2_price = entry[2]
         
-        # Buscar la hora exacta dentro del texto de la base de datos
+        # Extraer la hora exacta de la cadena que entregó la BD
         match = re.search(r'(\d{1,2}):(\d{2})\s*(a\.m\.|p\.m\.|am|pm)?', time_str, re.IGNORECASE)
         
         if match:
@@ -236,21 +236,23 @@ def create_embed(data, daily: int = 0, date: int = 1):
             
             # Formato de 12 horas a 24 horas
             if ampm:
-                if 'p' in ampm.lower() and hour < 12: hour += 12
-                elif 'a' in ampm.lower() and hour == 12: hour = 0
+                if 'p' in ampm.lower() and hour < 12:
+                    hour += 12
+                elif 'a' in ampm.lower() and hour == 12:
+                    hour = 0
             
-            target_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+            target_time = now_utc.replace(hour=hour, minute=minute, second=0, microsecond=0)
             
-            # Lógica para avanzar al día siguiente si la hora cruza la medianoche
+            # Avanzar de día en UTC si cruza medianoche o si el slot UTC de hoy ya pasó
             if last_dt and target_time < last_dt:
                 target_time += timedelta(days=1)
-            elif not last_dt and (target_time - now).total_seconds() < -43200:
+            elif not last_dt and (target_time - now_utc).total_seconds() < -1800:
                 target_time += timedelta(days=1)
                 
             last_dt = target_time
             unix_ts = int(target_time.timestamp())
             
-            # Reemplazar la hora en texto por la etiqueta dinámica de Discord
+            # Reemplazar la hora estática por la etiqueta dinámica de Discord
             discord_time = re.sub(r'\d{1,2}:\d{2}\s*(?:a\.m\.|p\.m\.|am|pm)?', f'<t:{unix_ts}:t>', time_str, flags=re.IGNORECASE)
         else:
             discord_time = time_str
@@ -258,7 +260,7 @@ def create_embed(data, daily: int = 0, date: int = 1):
         fuel_icon = "🟢" if isinstance(fuel_price, int) and fuel_price < 700 else "⛽"
         co2_icon = "🟢" if isinstance(co2_price, int) and co2_price < 140 else "♻️"
         
-        # Agregar el emoji del reloj solo si el texto original no lo traía
+        # Emoji de reloj si la cadena no lo incluye
         if not any(char in discord_time for char in ["🕒", "🕘", "🕙", "🕚", "🕛", "🕐", "🕑", "🕓", "🕔", "🕕", "🕖", "🕗", "🕜", "⏰"]):
             line = f"🕒 {discord_time}  •  {fuel_icon} {fuel_price}  •  {co2_icon} {co2_price}"
         else:
